@@ -3,19 +3,12 @@ import joblib
 import pandas as pd
 import requests
 from pydantic import BaseModel
-import os
+from io import BytesIO
 
-# ✅ Hugging Face Se Model Download (Best Solution)
-model_url = "https://huggingface.co/aditi2722/creditriskmodel/resolve/main/random_forest_credit.pkl"
-model_path = "random_forest_credit.pkl"
-
-if not os.path.exists(model_path):  # ✅ Agar model nahi hai to download karo
-    response = requests.get(model_url)
-    with open(model_path, "wb") as f:
-        f.write(response.content)
-
-# ✅ Load trained model
-model = joblib.load(model_path)
+# ✅ Hugging Face Se Model Direct Memory Me Load Karo
+model_url = "https://huggingface.co/Aditi30102004/credit-risk-model/resolve/main/random_forest_credit.pkl"
+response = requests.get(model_url)
+model = joblib.load(BytesIO(response.content))  # ✅ Directly Load Model
 
 # ✅ FastAPI app instance
 app = FastAPI(title="Credit Risk API", version="1.0")
@@ -54,6 +47,3 @@ def predict_risk(data: CreditRiskInput):
     input_data = pd.DataFrame([data.dict().values()], columns=data.dict().keys())
     prediction = model.predict(input_data)[0]  # Predict class
     return {"credit_risk": int(prediction)}
-
-
-
