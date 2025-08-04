@@ -1,49 +1,70 @@
 from fastapi import FastAPI
 import joblib
 import pandas as pd
-import requests
 from pydantic import BaseModel
-from io import BytesIO
+from fastapi.middleware.cors import CORSMiddleware  # ✅ Import CORS Middleware
 
-# ✅ Hugging Face Se Model Direct Memory Me Load Karo
-model_url = "https://huggingface.co/Aditi30102004/credit-risk-model/resolve/main/random_forest_credit.pkl"
-response = requests.get(model_url)
-model = joblib.load(BytesIO(response.content))  # ✅ Directly Load Model
+# ✅ Load the model correctly
+model_path = "random_forest_credit.pkl"  
+try:
+    model = joblib.load(model_path)
+except Exception as e:
+    print(f"❌ Model loading failed: {e}")
 
-# ✅ FastAPI app instance
+# ✅ FastAPI App
 app = FastAPI(title="Credit Risk API", version="1.0")
 
-# ✅ Define request schema (expected input format)
-class CreditRiskInput(BaseModel):
-    status_checking: float
-    duration: float
-    credit_history: float
-    purpose: float
-    credit_amount: float
-    savings_account: float
-    employment_since: float
-    installment_rate: float
-    personal_status: float
-    other_debtors: float
-    residence_since: float
-    property: float
-    age: float
-    other_installment_plans: float
-    housing: float
-    existing_credits: float
-    job: float
-    liable_people: float
-    telephone: float
-    foreign_worker: float
+# ✅ Add CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (Change to frontend URL if needed)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (POST, GET, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
-# ✅ Root endpoint
+# ✅ Define Input Schema
+class CreditRiskInput(BaseModel):
+    status_checking: int
+    duration: int
+    credit_history: int
+    purpose: int
+    credit_amount: int
+    savings_account: int
+    employment_since: int
+    installment_rate: int
+    personal_status: int
+    other_debtors: int
+    residence_since: int
+    property: int
+    age: int
+    other_installment_plans: int
+    housing: int
+    existing_credits: int
+    job: int
+    liable_people: int
+    telephone: int
+    foreign_worker: int
+
+# ✅ Root API Check
 @app.get("/")
 def home():
     return {"message": "Credit Risk API is running 🚀"}
 
-# ✅ Prediction endpoint
+# ✅ Loan Prediction API
 @app.post("/predict")
 def predict_risk(data: CreditRiskInput):
-    input_data = pd.DataFrame([data.dict().values()], columns=data.dict().keys())
-    prediction = model.predict(input_data)[0]  # Predict class
-    return {"credit_risk": int(prediction)}
+    try:
+        input_data = pd.DataFrame([data.dict().values()], columns=data.dict().keys())
+        print("Received Data:", input_data)  # Debugging print
+
+        # ✅ Make Prediction
+        prediction = model.predict(input_data)[0]  # Get the predicted class
+        print("Prediction Output:", prediction)  # Debugging print
+
+        # ✅ Return Response
+        return {"credit_risk": "✅ Loan Approved!" if prediction == 1 else "❌ Loan Rejected!"}
+    
+    except Exception as e:
+        print("❌ Prediction Error:", str(e))  # Print error details
+        return {"error": "Prediction failed"}

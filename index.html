@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction - Kotak UI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ✅ Header with Kotak Logo -->
+    <header>
+        <img src="kotak_logo.png" alt="Kotak Bank Logo" class="logo">
+    </header>
+
+    <!-- ✅ Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+        </ul>
+    </nav>
+
+    <!-- ✅ Loan Prediction Form -->
+    <div class="container">
+        <h2>Loan Eligibility Checker</h2>
+
+        <form id="loanForm">
+            <input type="number" id="credit_amount" placeholder="Credit Amount" required>
+            <input type="number" id="duration" placeholder="Duration (months)" required>
+            <input type="number" id="age" placeholder="Age" required>
+
+            <select id="status_checking">
+                <option value="1">Good Credit</option>
+                <option value="2">Bad Credit</option>
+            </select>
+
+            <button type="submit">Check Loan Eligibility</button>
+        </form>
+
+        <p id="result"></p>
+    </div>
+
+    <!-- ✅ Footer with Email & Contact Details -->
+    <footer>
+        <p>📧 Email: support@kotakbank.com</p>
+        <p>📞 Contact Us: 1800 209 0000</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
